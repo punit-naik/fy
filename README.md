@@ -26,10 +26,10 @@ lein test
 
 ### Test (app)
 
-Go to the browser and type in the following url in the address bar:
+Go to the browser and type in the following url in the address bar after starting the server:
 
 ```
-localhost:<port>/feed?width=1000&height=1000&limit=4
+http://localhost:<port>/feed?width=1000&height=1000&limit=4
 ```
 Then you'll see the download window pop up where you can save the images archived in a ZIP.
 
