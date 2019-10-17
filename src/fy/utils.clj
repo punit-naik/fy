@@ -1,14 +1,16 @@
 (ns fy.utils
-  (:require [clj-compress.core :as c]
-            [clojure.java.io :as io])
-  (:import [java.io ByteArrayOutputStream]))
+  (:require [me.raynes.fs.compression :as zip-utils]
+            [clojure.java.io :as io]))
 
 (defn write-to-zip-file
   "Archives a bunch of files into a single zip file
+  `zip-file` -> Name of the zip file archive
+  `files`    -> List of string paths of files to be compressed
   NOTE: Created archive will be present in the `/tmp` folder"
   [zip-file files]
-  (c/create-archive zip-file files "/tmp" "bzip2")
-  (str "/tmp/" zip-file ".tar.bz2"))
+  (let [zip-file-path (str "/tmp/" zip-file ".tar.bz2")]
+    (zip-utils/zip-files zip-file-path files)
+    zip-file-path))
 
 (defn write-to-file
   "Writes an input stream `i` to `file`
