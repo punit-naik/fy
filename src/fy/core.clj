@@ -37,7 +37,7 @@
                                 width (when width (Integer/parseInt width))
                                 height (when height (Integer/parseInt height))
                                 f (io/file (download-as-zip limit [width height]))]
-                            {:status 200 :headers {"Content-Type" "application/x-bzip2 bz2"
+                            {:status 200 :headers {"Content-Type" "application/zip"
                                                    "Content-Disposition" (str "attachment; filename=" (.getName f))}
                              :body f}))}}]]])
 
@@ -60,5 +60,7 @@
   (jetty/run-jetty #'app {:port port :join? false})
   (println "Server started running on port" port))
 
-(comment
-  (start 3000))
+(defn -main
+  [& args]
+  (start (if (seq args)
+           (Integer/parseInt (first args)) 3000)))
