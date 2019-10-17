@@ -8,7 +8,7 @@
   `files`    -> List of string paths of files to be compressed
   NOTE: Created archive will be present in the `/tmp` folder"
   [zip-file files]
-  (let [zip-file-path (str "/tmp/" zip-file ".tar.bz2")]
+  (let [zip-file-path (str "/tmp/" zip-file ".zip")]
     (zip-utils/zip-files zip-file-path files)
     zip-file-path))
 
