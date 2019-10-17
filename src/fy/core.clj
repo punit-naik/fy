@@ -8,14 +8,16 @@
             [reitit.ring.middleware.parameters :as parameters]
             [muuntaja.core :as m]
             [clojure.spec.alpha :as s]
-            [fy.flickr-images :refer [fetch]]
-            [ring.adapter.jetty :as jetty]))
+            [spec-tools.core :as st]
+            [fy.flickr-photo-feed :refer [download-as-zip]]
+            [ring.adapter.jetty :as jetty]
+            [clojure.java.io :as io]))
 
 ;; Spec
 
-(s/def ::width int?)
-(s/def ::height int?)
-(s/def ::limit int?)
+(s/def ::width pos-int?)
+(s/def ::height pos-int?)
+(s/def ::limit pos-int?)
 (s/def ::fetch-feed-params (s/keys :opt-un [::width ::height ::limit]))
 
 ;;
@@ -29,9 +31,15 @@
    ["/feed"
     {:swagger {:tags ["Flickr Public Photo Feed"]}}
     ["" {:get {:summary "Fetches Flickr public photo feed"
-                :parameters {:query ::fetch-feed-params}
-                :responses {200 {:body string?}}
-                :handler (fetch)}}]]])
+               :parameters {:query ::fetch-feed-params}
+               :handler (fn [{{width "width", height "height", limit "limit"} :query-params}]
+                          (let [limit (when limit (Integer/parseInt limit))
+                                width (when width (Integer/parseInt width))
+                                height (when height (Integer/parseInt height))
+                                f (io/file (download-as-zip limit [width height]))]
+                            {:status 200 :headers {"Content-Type" "application/x-bzip2 bz2"
+                                                   "Content-Disposition" (str "attachment; filename=" (.getName f))}
+                             :body f}))}}]]])
 
 (def router
   (ring/router routes
